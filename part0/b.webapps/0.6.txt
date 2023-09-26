@@ -1,0 +1,9 @@
+note over browser:
+the note is appended to the note list
+on the site, which makes it not
+require any reloading. Then, it gets
+sent to the server
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note
+server-->browser: {"message":"note created"}
