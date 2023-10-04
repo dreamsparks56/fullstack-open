@@ -1,7 +1,19 @@
 import { useState } from 'react'
 
+const Title = (props) =>
+  <h1>{props.text}</h1>
+
 const Button = (props) => 
   <button onClick={props.handleClick}>{props.text}</button>
+
+const Anecdote = (props) => {
+  return (
+    <div>
+      <div>{props.anecdote}</div>
+      <div>has {props.votes} votes</div>
+    </div>
+  )
+}
 
 const App = () => {
   const anecdotes = [
@@ -29,10 +41,13 @@ const App = () => {
   
   return (
     <div>
-      <div>{anecdotes[selected]}</div>
-      <div>{points[selected]}</div>
+      <Title text="Anecdote of the day" />
+      <Anecdote anecdote={anecdotes[selected]} votes={points[selected]} />
       <Button handleClick={handleVoted} text="vote" />
       <Button handleClick={handleSelected} text="next anecdote" />
+      <Title text="Anecdote with most votes" />
+      <Anecdote anecdote={anecdotes[points.indexOf(Math.max(...points))]} votes={Math.max(...points)} />
+
     </div>
   )
 }
