@@ -7,17 +7,40 @@ const Button = (props) =>
   <button onClick={props.handleClick}>{props.text}</button>
 
 const Display = (props) =>
-  <div>{props.title} {props.value}</div>
+  <div>{props.value}</div>
 
 const App = () => {
   // enregistrer les clics de chaque bouton dans un état différent
+  const [all, setAll] = useState(0)
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+  const [avg, setAvg] = useState(0)
+  const [pos, setPos] = useState(0)
 
-  const handleGood = () => setGood(good + 1)
-  const handleNeutral = () => setNeutral(neutral + 1)
-  const handleBad = () => setBad(bad + 1)
+  const handleGood = () => {
+    handleAll()
+    setGood(good + 1)
+    handleAvg()
+    handlePos()
+  }
+  const handleNeutral = () => {
+    handleAll()
+    setNeutral(neutral + 1)
+    handleAvg()
+    handlePos()
+  }
+  const handleBad = () => {
+    handleAll()
+    setBad(bad + 1)
+    handleAvg()
+    handlePos()
+  }
+  const handleAll = () => {    
+    setAll(all + 1)
+  }
+  const handleAvg = () => setAvg((good-bad)/all)
+  const handlePos = () => setPos(good*100/all)
 
   return (
     <div>
@@ -26,9 +49,12 @@ const App = () => {
       <Button handleClick={handleNeutral} text="neutral" />
       <Button handleClick={handleBad} text="bad" />
       <Title text="statistics" />
-      <Display title="good" value={good} />
-      <Display title="neutral" value={neutral} />
-      <Display title="bad" value={bad} />
+      <Display value={`good ${good}`} />
+      <Display value={`neutral ${neutral}`} />
+      <Display value={`bad ${bad}`}/>
+      <Display value={`all ${all}`}/>
+      <Display value={`average ${avg}`}/>
+      <Display value={`positive ${pos}%`}/>
     </div>
   )
 }
