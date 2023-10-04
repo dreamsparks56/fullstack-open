@@ -6,22 +6,22 @@ const Title = (props) =>
 const Button = (props) =>
   <button onClick={props.handleClick}>{props.text}</button>
 
-const Display = (props) =>
-  <div>{props.value}</div>
+const StatisticLine = (props) =>
+  <div>{props.text} {props.value}</div>
 
 const Statistics = (props) => {
   return(
     props.all !== 0 ?
     <div>
-      <Display value={`good ${props.good}`} />
-      <Display value={`neutral ${props.neutral}`} />
-      <Display value={`bad ${props.bad}`}/>
-      <Display value={`all ${props.all}`}/>
-      <Display value={`average ${props.avg}`}/>
-      <Display value={`positive ${props.pos}%`}/>
+      <StatisticLine text="good" value={props.good} />
+      <StatisticLine text="neutral" value={props.neutral} />
+      <StatisticLine text="bad" value={props.bad}/>
+      <StatisticLine text="all" value={props.all}/>
+      <StatisticLine text="average" value={props.avg}/>
+      <StatisticLine text="positive" value={props.pos}/>
     </div>
     :
-    <Display value="No feedback given" />
+    <StatisticLine value="No feedback given" />
   )
 }
 
@@ -32,7 +32,11 @@ const App = () => {
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
   const [avg, setAvg] = useState(0)
-  const [pos, setPos] = useState(0)
+  const [pos, setPos] = useState('0%')
+
+  const handleAll = () => {    
+    setAll(all + 1)
+  }
 
   const handleGood = () => {
     handleAll()
@@ -52,11 +56,8 @@ const App = () => {
     handleAvg()
     handlePos()
   }
-  const handleAll = () => {    
-    setAll(all + 1)
-  }
   const handleAvg = () => setAvg((good-bad)/all)
-  const handlePos = () => setPos(good*100/all)
+  const handlePos = () => setPos(`${good*100/all}%`)
 
   return (
     <div>
