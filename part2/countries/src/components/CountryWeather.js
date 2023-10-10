@@ -24,8 +24,6 @@ const CountryWeather = ({city, country}) => {
       <div>temperature {weather.temp_c} Celsius</div>
       <img src={weather.condition.icon} alt={weather.condition.text}></img>
       <div>wind {weather.wind_kph} m/s</div>
-      
-
     </>
   )
 
