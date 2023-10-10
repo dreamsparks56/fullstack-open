@@ -25,7 +25,6 @@ function App() {
 
   return (
     <div>
-      {console.log(countriesToShow)}
       <Filter description="find countries" filter={filter} onChange={handleFilterChange} />
       <Countries countries={countriesToShow} />
     </div>
