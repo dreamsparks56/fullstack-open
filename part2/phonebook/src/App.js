@@ -37,9 +37,13 @@ const App = () => {
       number: newNumber
     }
     persons.find(person => person.name === newName) === undefined ?
-      setPersons(persons.concat(person)) :
+      axios
+      .post('http://localhost:3001/persons', person)
+      .then(response => {
+        setPersons(persons.concat(person))
+        setNewName('')
+      }) :
       alert(`${newName} is already added to phonebook`)
-    setNewName('')
   }
 
   const personsToShow = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
