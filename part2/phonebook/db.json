@@ -4,6 +4,11 @@
       "name": "Arto Hellas",
       "number": "040-123456",
       "id": 1
+    },
+    {
+      "name": "Ada Lovelace",
+      "number": "45-23-126723",
+      "id": 3
     }
   ]
 }

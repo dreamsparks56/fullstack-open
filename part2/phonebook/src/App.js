@@ -36,19 +36,30 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-    persons.find(person => person.name === newName) === undefined ?
+    const existingPerson = persons.find(person => person.name === newName)
+    existingPerson === undefined ?
       personService
       .create(person)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
       }) :
-      alert(`${newName} is already added to phonebook`)
+        updatePerson(existingPerson.id, person)
+
+      setNewName('')
+      setNewNumber('')
+  }
+
+  const updatePerson = (id, newPerson) => {
+    if(window.confirm(`${newName} is already added to phonebook. Do you want to replace the old number with a new one?`)) {
+      personService
+      .update(id, newPerson).then(returnedPerson => {
+        setPersons(persons.map(note => note.id !== id ? note : returnedPerson))
+      })
+
+    }
   }
 
   const deletePerson = (id) => {
-    console.log(id)
     const person = persons.find(person => person.id === id)
     if (person !== undefined) {
       if(window.confirm(`Delete ${person.name}?`)) {
@@ -56,7 +67,6 @@ const App = () => {
         .remove(id)
         .then(data => {
           setPersons(persons.filter(person => person.id !== id))
-          console.log(persons)
         })
         .catch(error => {
           alert(
