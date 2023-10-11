@@ -40,17 +40,38 @@ const App = () => {
       personService
       .create(person)
       .then(returnedPerson => {
-        setPersons(persons.concat(person))
+        setPersons(persons.concat(returnedPerson))
         setNewName('')
+        setNewNumber('')
       }) :
       alert(`${newName} is already added to phonebook`)
+  }
+
+  const deletePerson = (id) => {
+    console.log(id)
+    const person = persons.find(person => person.id === id)
+    if (person !== undefined) {
+      if(window.confirm(`Delete ${person.name}?`)) {
+        personService
+        .remove(id)
+        .then(data => {
+          setPersons(persons.filter(person => person.id !== id))
+          console.log(persons)
+        })
+        .catch(error => {
+          alert(
+            `there was an error deleting ${person.name}`
+          )
+        })
+      }
+    }
+    
   }
 
   const personsToShow = persons.length > 0 ? persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase())) : []
 
   return (
     <div>
-      {console.log(persons)}
       <h2>Phonebook</h2>
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <PersonForm
@@ -60,7 +81,7 @@ const App = () => {
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      {persons.length > 0 ? <Persons persons={personsToShow} /> : <div>No data available</div>}
+      {persons.length > 0 ? <Persons persons={personsToShow} handleDelete={deletePerson} /> : <div>No data available</div>}
     </div>
   )
 }
