@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
@@ -23,10 +23,10 @@ const App = () => {
   }
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
@@ -37,19 +37,20 @@ const App = () => {
       number: newNumber
     }
     persons.find(person => person.name === newName) === undefined ?
-      axios
-      .post('http://localhost:3001/persons', person)
-      .then(response => {
+      personService
+      .create(person)
+      .then(returnedPerson => {
         setPersons(persons.concat(person))
         setNewName('')
       }) :
       alert(`${newName} is already added to phonebook`)
   }
 
-  const personsToShow = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+  const personsToShow = persons.length > 0 ? persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase())) : []
 
   return (
     <div>
+      {console.log(persons)}
       <h2>Phonebook</h2>
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <PersonForm
@@ -59,7 +60,7 @@ const App = () => {
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      {persons.length > 0 ? <Persons persons={personsToShow} /> : <div>No data available</div>}
     </div>
   )
 }
