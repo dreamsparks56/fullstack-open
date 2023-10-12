@@ -3,12 +3,15 @@ import personService from './services/persons'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [filter, setFilter] = useState('')
+  const [filter, setFilter] = useState('')  
+  const [message, setMessage] = useState(null)
+  const [messageIsSuccess, setMessageIsSuccess] = useState(true)
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -42,6 +45,13 @@ const App = () => {
       .create(person)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
+        setMessageIsSuccess(true)
+        setMessage(
+          `Added ${returnedPerson.name}`
+        )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       }) :
         updatePerson(existingPerson.id, person)
 
@@ -54,6 +64,13 @@ const App = () => {
       personService
       .update(id, newPerson).then(returnedPerson => {
         setPersons(persons.map(note => note.id !== id ? note : returnedPerson))
+        setMessageIsSuccess(true)
+        setMessage(
+          `Modified ${returnedPerson.name}`
+        )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
 
     }
@@ -69,9 +86,13 @@ const App = () => {
           setPersons(persons.filter(person => person.id !== id))
         })
         .catch(error => {
-          alert(
-            `there was an error deleting ${person.name}`
+          setMessage(
+            `The specified person was already removed from server`
           )
+          setMessageIsSuccess(false)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
       }
     }
@@ -83,6 +104,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} success={messageIsSuccess} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <PersonForm
         onSubmit={addPerson}
