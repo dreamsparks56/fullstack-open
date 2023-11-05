@@ -1,4 +1,4 @@
-const { countBy } = require('lodash')
+const { countBy, forEach } = require('lodash')
 
 const dummy = (blogs) => {
   const logger = require('./logger')
@@ -22,7 +22,23 @@ const mostBlogs = (blogs) => {
   return { 'author': authors[authors.length-1], 'blogs': blogsAmount[blogsAmount.length-1] }
 }
 
+const mostLikes = (blogs) => {
+  const authors = []
+  const likes = []
+  forEach(blogs, (value) => {
+    const index = authors.indexOf(value.author)
+    if (index === -1) {
+      authors.push(value.author)
+      likes.push(value.likes)
+    } else {
+      likes[index] += value.likes
+    }
+  })
+  const maxLikes = likes.indexOf(Math.max(...likes))
+  return { 'author': authors[maxLikes], 'likes': likes[maxLikes] }
+}
+
 module.exports = {
-  dummy, totalLikes, favoriteBlog, mostBlogs
+  dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes
 }
 
