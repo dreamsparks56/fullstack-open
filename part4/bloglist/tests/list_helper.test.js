@@ -1,6 +1,6 @@
 const listHelper = require('../utils/list_helper')
 
-describe('total likes', () => {
+describe('like comparison', () => {
   const blogs = [
     {
       _id: '5a422a851b54a676234d17f7',
@@ -52,9 +52,14 @@ describe('total likes', () => {
     }
   ]
 
-  test('when list has many blogs, returns the exact amount', () => {
+  test('when list has many blogs, returns the total amount of likes', () => {
     const result = listHelper.totalLikes(blogs)
     expect(result).toBe(36)
+  })
+
+  test('when list has many blogs, returns the blog with the most likes', () => {
+    const result = listHelper.favoriteBlog(blogs)
+    expect(result).toEqual(blogs[2])
   })
 })
 
