@@ -61,6 +61,11 @@ describe('like comparison', () => {
     const result = listHelper.favoriteBlog(blogs)
     expect(result).toEqual(blogs[2])
   })
+
+  test('most blogs', () => {
+    const result = listHelper.mostBlogs(blogs)
+    expect(result).toEqual({ 'author': 'Robert C. Martin', 'blogs': 3 })
+  })
 })
 
 test('dummy returns one', () => {
