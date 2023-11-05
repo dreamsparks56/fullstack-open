@@ -52,7 +52,12 @@ const App = () => {
         setTimeout(() => {
           setMessage(null)
         }, 5000)
-      }) :
+      }).catch(error => {
+        setMessage(error.response.data.error)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+    }) :
         updatePerson(existingPerson.id, person)
 
       setNewName('')
@@ -71,8 +76,12 @@ const App = () => {
         setTimeout(() => {
           setMessage(null)
         }, 5000)
+      }).catch(error => {
+        setMessage(error.response.data.error)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
-
     }
   }
 
