@@ -53,6 +53,25 @@ test('a new blog is added', async () => {
   expect(amountOfBlogs).toHaveLength(helper.initialBlogs.length + 1)
 })
 
+test('the likes property has default value', async () => {
+  const newBlogWithoutLikes = {
+
+    title: 'New title',
+    author: 'New Author',
+    url: 'https://www.com/',
+    __v: 0
+  }
+
+  const addedBlog = await api
+    .post('/api/blogs')
+    .send(newBlogWithoutLikes)
+
+  expect(addedBlog.body.likes).toStrictEqual(0)
+})
+
+
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
+
