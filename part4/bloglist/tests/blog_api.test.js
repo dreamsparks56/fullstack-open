@@ -69,7 +69,20 @@ test('the likes property has default value', async () => {
   expect(addedBlog.body.likes).toStrictEqual(0)
 })
 
+test('no notes with missing properties are being added to the database', async () => {
+  const newBlogWithoutData = {
+    author: 'New Author',
+    __v: 0
+  }
 
+  await api
+    .post('/api/blogs')
+    .send(newBlogWithoutData)
+    .expect(400)
+
+  const amountOfBlogs = await helper.blogsInDb()
+  expect(amountOfBlogs).toHaveLength(helper.initialBlogs.length)
+})
 
 afterAll(async () => {
   await mongoose.connection.close()
