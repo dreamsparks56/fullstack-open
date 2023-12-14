@@ -14,77 +14,102 @@ beforeEach(async () => {
   }
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+describe('blog retrieval', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('all blogs are returned', async () => {
+    const response = await api.get('/api/blogs')
+
+    expect(response.body).toHaveLength(helper.initialBlogs.length)
+  })
+
+  test('the id property is defined', async () => {
+    const response = await api.get('/api/blogs')
+    for (let blog of response.body) {
+      expect(blog.id).toBeDefined()
+    }
+  })
 })
 
-test('all blogs are returned', async () => {
-  const response = await api.get('/api/blogs')
+describe('blog insertion', async () => {
+  test('a new blog is added', async () => {
+    const newBlog = {
+      title: 'New title',
+      author: 'New Author',
+      url: 'https://www.com/',
+      likes: 4,
+      __v: 0
+    }
 
-  expect(response.body).toHaveLength(helper.initialBlogs.length)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const amountOfBlogs = await helper.blogsInDb()
+    expect(amountOfBlogs).toHaveLength(helper.initialBlogs.length + 1)
+  })
+
+  test('the likes property has default value', async () => {
+    const newBlogWithoutLikes = {
+
+      title: 'New title',
+      author: 'New Author',
+      url: 'https://www.com/',
+      __v: 0
+    }
+
+    const addedBlog = await api
+      .post('/api/blogs')
+      .send(newBlogWithoutLikes)
+
+    expect(addedBlog.body.likes).toStrictEqual(0)
+  })
+
+  test('no notes with missing properties are being added to the database', async () => {
+    const newBlogWithoutData = {
+      author: 'New Author',
+      __v: 0
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogWithoutData)
+      .expect(400)
+
+    const amountOfBlogs = await helper.blogsInDb()
+    expect(amountOfBlogs).toHaveLength(helper.initialBlogs.length)
+  })
+
+  afterAll(async () => {
+    await mongoose.connection.close()
+  })
 })
 
-test('the id property is defined', async () => {
-  const response = await api.get('/api/blogs')
-  for (let blog of response.body) {
-    expect(blog.id).toBeDefined()
-  }
-})
+describe('blog deletion', async () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    const blogsAtStart = await helper.notesInDb()
+    const blogToDelete = blogsAtStart[0]
 
-test('a new blog is added', async () => {
-  const newBlog = {
-    title: 'New title',
-    author: 'New Author',
-    url: 'https://www.com/',
-    likes: 4,
-    __v: 0
-  }
+    await api
+      .delete(`/api/notes/${blogToDelete.id}`)
+      .expect(204)
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    const blogsAtEnd = await helper.notesInDb()
 
-  const amountOfBlogs = await helper.blogsInDb()
-  expect(amountOfBlogs).toHaveLength(helper.initialBlogs.length + 1)
-})
+    expect(blogsAtEnd).toHaveLength(
+      helper.initialNotes.length - 1
+    )
 
-test('the likes property has default value', async () => {
-  const newBlogWithoutLikes = {
+    const contents = blogsAtEnd.map(r => r.content)
 
-    title: 'New title',
-    author: 'New Author',
-    url: 'https://www.com/',
-    __v: 0
-  }
-
-  const addedBlog = await api
-    .post('/api/blogs')
-    .send(newBlogWithoutLikes)
-
-  expect(addedBlog.body.likes).toStrictEqual(0)
-})
-
-test('no notes with missing properties are being added to the database', async () => {
-  const newBlogWithoutData = {
-    author: 'New Author',
-    __v: 0
-  }
-
-  await api
-    .post('/api/blogs')
-    .send(newBlogWithoutData)
-    .expect(400)
-
-  const amountOfBlogs = await helper.blogsInDb()
-  expect(amountOfBlogs).toHaveLength(helper.initialBlogs.length)
-})
-
-afterAll(async () => {
-  await mongoose.connection.close()
+    expect(contents).not.toContain(blogToDelete.content)
+  })
 })
 
