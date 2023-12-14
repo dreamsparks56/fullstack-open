@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
 const supertest = require('supertest')
+const mongoose = require('mongoose')
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
@@ -36,7 +36,7 @@ describe('blog retrieval', () => {
   })
 })
 
-describe('blog insertion', async () => {
+describe('blog insertion', () => {
   test('a new blog is added', async () => {
     const newBlog = {
       title: 'New title',
@@ -72,7 +72,7 @@ describe('blog insertion', async () => {
     expect(addedBlog.body.likes).toStrictEqual(0)
   })
 
-  test('no notes with missing properties are being added to the database', async () => {
+  test('no blogs with missing properties are being added to the database', async () => {
     const newBlogWithoutData = {
       author: 'New Author',
       __v: 0
@@ -86,30 +86,49 @@ describe('blog insertion', async () => {
     const amountOfBlogs = await helper.blogsInDb()
     expect(amountOfBlogs).toHaveLength(helper.initialBlogs.length)
   })
+})
 
-  afterAll(async () => {
-    await mongoose.connection.close()
+describe('blog update', () => {
+  test('succeeds with valid data', async () => {
+    const blogs = await helper.blogsInDb()
+    const blogIds = blogs.map(blog => blog.id)
+    const updatedId = blogIds[Math.floor(Math.random() * blogIds.length)]
+    console.log(updatedId)
+
+    const newValues = {
+      likes: 17
+    }
+
+    const updatedBlog = await api
+      .put(`/api/blogs/${updatedId}`)
+      .send(newValues)
+      .expect(200)
+
+    expect(updatedBlog.body.likes).toStrictEqual(newValues.likes)
   })
 })
 
-describe('blog deletion', async () => {
+describe('blog deletion', () => {
   test('succeeds with status code 204 if id is valid', async () => {
-    const blogsAtStart = await helper.notesInDb()
+    const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
 
     await api
-      .delete(`/api/notes/${blogToDelete.id}`)
+      .delete(`/api/blogs/${blogToDelete.id}`)
       .expect(204)
 
-    const blogsAtEnd = await helper.notesInDb()
+    const blogsAtEnd = await helper.blogsInDb()
 
     expect(blogsAtEnd).toHaveLength(
-      helper.initialNotes.length - 1
+      helper.initialBlogs.length - 1
     )
 
-    const contents = blogsAtEnd.map(r => r.content)
+    const titles = blogsAtEnd.map(r => r.title)
 
-    expect(contents).not.toContain(blogToDelete.content)
+    expect(titles).not.toContain(blogToDelete.title)
   })
 })
 
+afterAll(async () => {
+  await mongoose.connection.close()
+})
