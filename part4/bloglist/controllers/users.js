@@ -10,6 +10,19 @@ usersRouter.get('/', async (request, response) => {
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
 
+  if(!username || !password) {
+    response.status(400).json({
+      error: 'username or password missing'
+    })
+  }
+
+  if(username.length < 3 || password.length < 3) {
+    response.status(400).json({
+      error: 'minimum length not met for username or password'
+    })
+  }
+
+
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
