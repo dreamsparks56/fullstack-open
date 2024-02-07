@@ -10,6 +10,13 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [newBlogTitle, setNewBlogTitle] = useState('')
+  const [newBlogAuthor, setNewBlogAuthor] = useState('')
+  const [newBlogURL, setNewBlogURL] = useState('')
+
+  useEffect(() => {
+    (user && getBlogs())
+  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -18,16 +25,28 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [])  
+
+  const getBlogs = () => {  
+    blogService.getAll().then(blogs =>
+      setBlogs( blogs )
+    )
+  }
+
+  const handleTitleChange = (event) => {
+    setNewBlogTitle(event.target.value)
+  }
+
+  const handleAuthorChange = (event) => {
+    setNewBlogAuthor(event.target.value)
+  }
+  
+  const handleURLChange = (event) => {
+    setNewBlogURL(event.target.value)
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
-
-    const getBlogs = () => {  
-      blogService.getAll().then(blogs =>
-        setBlogs( blogs )
-      )
-    }
     
     try {
       const user = await loginService.login({
@@ -82,12 +101,59 @@ const App = () => {
     setUser(null)
   }
 
+  const blogForm = () => (
+    <div>
+      <h2>create new</h2>
+      <form onSubmit={addBlog}>
+        <div>Title 
+          <input 
+            value={newBlogTitle}
+            onChange={handleTitleChange}
+            />
+        </div>
+        <div>Author 
+          <input 
+            value={newBlogAuthor}
+            onChange={handleAuthorChange}
+            />
+        </div>  
+        <div>URL 
+          <input 
+            value={newBlogURL}
+            onChange={handleURLChange}
+            />
+        </div>
+        <button type="submit">save</button>       
+      </form>
+    </div>
+  )
+
+  const addBlog = (event) => {
+    event.preventDefault()
+
+    const newBlog = {
+      title: newBlogTitle,
+      author: newBlogAuthor,
+      url: newBlogURL
+    }
+  
+    blogService
+      .create(newBlog)
+        .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setNewBlogTitle('')
+        setNewBlogAuthor('')
+        setNewBlogURL('')
+      })
+  }
+
   const dashboard = () => (
     <div>
       <div>{user.name} logged in
         <button onClick={logout}>logout</button>
       </div>
       {blogSection()}
+      {blogForm()}
     </div>
   )
 
