@@ -82,6 +82,7 @@ const App = () => {
     blogService
       .create({...blogObject, userId: user._id})
         .then(returnedBlog => {
+          console.log(returnedBlog)
         setBlogs(blogs.concat(returnedBlog))
         handleNotification(`a new blog ${newBlogTitle} by ${newBlogAuthor} added`, true)
       })
