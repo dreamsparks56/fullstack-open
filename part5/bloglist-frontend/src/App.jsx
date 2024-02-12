@@ -32,18 +32,6 @@ const App = () => {
     )
   }
 
-  const handleTitleChange = (event) => {
-    setNewBlogTitle(event.target.value)
-  }
-
-  const handleAuthorChange = (event) => {
-    setNewBlogAuthor(event.target.value)
-  }
-  
-  const handleURLChange = (event) => {
-    setNewBlogURL(event.target.value)
-  }
-
   const handleNotification = (message, success) => {
     const length = 5000
 
@@ -92,7 +80,7 @@ const App = () => {
 
   const addBlog = (blogObject) => {  
     blogService
-      .create(blogObject)
+      .create({...blogObject, userId: user._id})
         .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         handleNotification(`a new blog ${newBlogTitle} by ${newBlogAuthor} added`, true)
