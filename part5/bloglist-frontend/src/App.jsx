@@ -32,6 +32,10 @@ const App = () => {
     )
   }
 
+  const verifyId = id => {
+    return blogService.verifyId(id)
+  }
+
   const handleNotification = (message, success) => {
     const length = 5000
 
@@ -82,9 +86,8 @@ const App = () => {
     blogService
       .create({...blogObject, userId: user._id})
         .then(returnedBlog => {
-          console.log(returnedBlog)
         setBlogs(blogs.concat(returnedBlog))
-        handleNotification(`a new blog ${newBlogTitle} by ${newBlogAuthor} added`, true)
+        handleNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, true)
       })
   }
 
@@ -102,6 +105,18 @@ const App = () => {
     setBlogs(blogs.toSorted((a, b) => a.likes - b.likes))
   }
 
+  const deleteBlog = (id, title, author) => {
+    if(window.confirm(`Remove blog ${title} by ${author}?`)) {
+      blogService
+      .deleteBlog(id)
+      .then(() => {
+        setBlogs(blogs.filter(blog => blog.id !== id))
+        handleNotification(`${title} by ${author} was successfully deleted`, true)
+      })
+    }
+    
+  }
+
   const dashboard = () => (
     <div>
       <div>{user.name} logged in
@@ -117,7 +132,7 @@ const App = () => {
       <h2>blogs</h2>
       <button onClick={sortByLikes}>sort by likes</button>      
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} verifyId={verifyId} />
       )}
     </div>
   )

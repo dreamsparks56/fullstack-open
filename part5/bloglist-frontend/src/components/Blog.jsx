@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   
   const blogStyle = {
@@ -38,6 +38,17 @@ const Blog = ({ blog, updateBlog }) => {
     })
   }
 
+  const deleteButton = () => (
+    <button onClick={handleDelete}>remove</button>
+  )
+
+  const handleDelete = (event) => {    
+    event.preventDefault()
+
+    deleteBlog(blog.id, blog.title, blog.author)
+  }
+
+
   const blogExpanded = () => (
     <div>
       <div>
@@ -53,6 +64,7 @@ const Blog = ({ blog, updateBlog }) => {
       <div>
         {blog.user.name}
       </div>
+      {verifyId(blog.user.id) && deleteButton()}
       {toggler('collapse')}
     </div>
     )
