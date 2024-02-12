@@ -98,6 +98,10 @@ const App = () => {
 
   }
 
+  const sortByLikes = () => {
+    setBlogs(blogs.toSorted((a, b) => a.likes - b.likes))
+  }
+
   const dashboard = () => (
     <div>
       <div>{user.name} logged in
@@ -110,7 +114,8 @@ const App = () => {
 
   const blogSection = () => (
     <div>
-      <h2>blogs</h2>      
+      <h2>blogs</h2>
+      <button onClick={sortByLikes}>sort by likes</button>      
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>
       )}
