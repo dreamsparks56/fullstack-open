@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
-  
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -12,9 +12,9 @@ const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
   }
 
   const blogMain = () => (
-  <div>
-    {blog.title} {blog.author} {toggler('expand')}
-  </div> 
+    <div>
+      {blog.title} {blog.author} {toggler('expand')}
+    </div>
   )
 
   const toggleExpanded = () => {
@@ -27,7 +27,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
     </button>
   )
 
-  const handleLike = (event) => {    
+  const handleLike = (event) => {
     event.preventDefault()
 
     updateBlog(blog.id, {
@@ -42,7 +42,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
     <button onClick={handleDelete}>remove</button>
   )
 
-  const handleDelete = (event) => {    
+  const handleDelete = (event) => {
     event.preventDefault()
 
     deleteBlog(blog.id, blog.title, blog.author)
@@ -67,14 +67,14 @@ const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
       {verifyId(blog.user.id) && deleteButton()}
       {toggler('collapse')}
     </div>
-    )
+  )
 
   return (
     <div style = {blogStyle}>
-    {!isExpanded && blogMain()}
-    {isExpanded && blogExpanded()}
-   </div>
- )
+      {!isExpanded && blogMain()}
+      {isExpanded && blogExpanded()}
+    </div>
+  )
 }
 
 export default Blog

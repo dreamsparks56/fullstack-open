@@ -13,7 +13,7 @@ const App = () => {
   const [success, setSuccess] = useState(false)
   const [user, setUser] = useState(null)
 
-  useEffect(() => {
+  useEffect((user) => {
     (user && getBlogs())
   }, [])
 
@@ -24,9 +24,9 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
-  }, [])  
+  }, [])
 
-  const getBlogs = () => {  
+  const getBlogs = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )
@@ -41,19 +41,19 @@ const App = () => {
 
     setMessage(message)
     setSuccess(success)
-      setTimeout(() => {
-        setMessage(null)
-      }, length)
-  }  
+    setTimeout(() => {
+      setMessage(null)
+    }, length)
+  }
 
-  const handleLogin = async ({ username, password }) => {    
+  const handleLogin = async ({ username, password }) => {
     try {
       const user = await loginService.login({
         username, password,
       })
       window.localStorage.setItem(
         'loggedUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
 
       setUser(user)
@@ -66,7 +66,7 @@ const App = () => {
   const loginForm = () => (
     <Togglable buttonLabel="login">
       <LoginForm handleLogin={handleLogin} />
-      </Togglable>
+    </Togglable>
   )
 
   const logout = () => {
@@ -79,13 +79,13 @@ const App = () => {
   const blogForm = () => (
     <Togglable buttonLabel="create new" ref={blogFormRef}>
       <BlogForm createBlog={addBlog} />
-      </Togglable>
+    </Togglable>
   )
 
-  const addBlog = (blogObject) => {  
+  const addBlog = (blogObject) => {
     blogService
-      .create({...blogObject, userId: user._id})
-        .then(returnedBlog => {
+      .create({ ...blogObject, userId: user._id })
+      .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         handleNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, true)
       })
@@ -108,13 +108,13 @@ const App = () => {
   const deleteBlog = (id, title, author) => {
     if(window.confirm(`Remove blog ${title} by ${author}?`)) {
       blogService
-      .deleteBlog(id)
-      .then(() => {
-        setBlogs(blogs.filter(blog => blog.id !== id))
-        handleNotification(`${title} by ${author} was successfully deleted`, true)
-      })
+        .deleteBlog(id)
+        .then(() => {
+          setBlogs(blogs.filter(blog => blog.id !== id))
+          handleNotification(`${title} by ${author} was successfully deleted`, true)
+        })
     }
-    
+
   }
 
   const dashboard = () => (
@@ -130,7 +130,7 @@ const App = () => {
   const blogSection = () => (
     <div>
       <h2>blogs</h2>
-      <button onClick={sortByLikes}>sort by likes</button>      
+      <button onClick={sortByLikes}>sort by likes</button>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} verifyId={verifyId} />
       )}
@@ -142,7 +142,7 @@ const App = () => {
 
       <Notification message={message} success={success} />
 
-      {!user && loginForm()} 
+      {!user && loginForm()}
       {user && dashboard()}
     </div>
   )
