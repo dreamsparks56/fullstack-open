@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 describe('Blog', () => {
-  let container
   const blog = {
     title: 'New title',
     author: 'New author',
@@ -16,11 +15,8 @@ describe('Blog', () => {
     }
   }
 
-  beforeEach(() => {
-    container = render(<Blog blog={blog} verifyId={() => false}/>).container
-  })
-
   test('renders content right initially', () => {
+    const { container } = render(<Blog blog={blog} />)
     const div = container.querySelector('.blog')
 
     expect(div).toHaveTextContent(
@@ -38,6 +34,7 @@ describe('Blog', () => {
   })
 
   test('renders content right after expanding', async () => {
+    const { container } = render(<Blog blog={blog} verifyId={() => false} />)
 
     const div = container.querySelector('.blog')
     const toggler = screen.getByText('expand')
@@ -51,6 +48,22 @@ describe('Blog', () => {
     expect(div).toHaveTextContent(
       '0'
     )
+  })
+
+  test('update calls are being handled', async () => {
+    const mockUpdateHandler = jest.fn()
+    const { container } = render(<Blog blog={blog} updateBlog={mockUpdateHandler} verifyId={() => false} />)
+
+    const toggler = screen.getByText('expand')
+    await userEvent.click(toggler)
+
+    const likes = screen.getByText('like')
+    await userEvent.click(likes)
+    expect(mockUpdateHandler.mock.calls).toHaveLength(1)
+    await userEvent.click(likes)
+    expect(mockUpdateHandler.mock.calls).toHaveLength(2)
+
+
   })
 })
 
