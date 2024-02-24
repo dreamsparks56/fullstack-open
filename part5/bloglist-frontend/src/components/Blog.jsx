@@ -70,7 +70,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
   )
 
   return (
-    <div style = {blogStyle}>
+    <div style = {blogStyle} className="blog">
       {!isExpanded && blogMain()}
       {isExpanded && blogExpanded()}
     </div>
