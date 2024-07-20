@@ -1,11 +1,9 @@
-import React from 'react'
 import { render, screen } from '@testing-library/react'
-import '@testing-library/jest-dom'
-import BlogForm from './BlogForm'
 import userEvent from '@testing-library/user-event'
+import BlogForm from './BlogForm'
 
 test('<NoteForm /> updates parent state and calls onSubmit', async () => {
-  const createBlog = jest.fn()
+  const createBlog = vi.fn()
   const user = userEvent.setup()
 
   render(<BlogForm createBlog={createBlog} />)

@@ -1,5 +1,3 @@
-import React from 'react'
-import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
@@ -51,7 +49,7 @@ describe('Blog', () => {
   })
 
   test('update calls are being handled', async () => {
-    const mockUpdateHandler = jest.fn()
+    const mockUpdateHandler = vi.fn()
     const { container } = render(<Blog blog={blog} updateBlog={mockUpdateHandler} verifyId={() => false} />)
 
     const toggler = screen.getByText('expand')
