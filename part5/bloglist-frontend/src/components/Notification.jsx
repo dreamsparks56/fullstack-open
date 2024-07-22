@@ -19,7 +19,7 @@ const Notification = ({ message, success }) => {
     }
 
   return (
-    <div style= {message ? notificationStyle : null}>
+    <div className = {success ? 'success' : 'error'} style= {message ? notificationStyle : null}>
       {message}
     </div>
   )

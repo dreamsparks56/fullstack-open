@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -22,22 +23,35 @@ describe('Blog app', () => {
   })
 
   describe('Login', () => {
-    test('succeeds with correct credentials', async ({ page }) => {  
-      await page.getByRole('button', { name: 'login' }).click()    
-      await page.getByTestId('username').fill('root')
-      await page.getByTestId('password').fill('what')
-      await page.getByRole('button', { name: 'login' }).click()
-      
+    test('succeeds with correct credentials', async ({ page }) => {
+      await loginWith(page, 'root', 'what')
       await expect(page.getByText('Superuser logged in')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      await page.getByRole('button', { name: 'login' }).click()    
-      await page.getByTestId('username').fill('root')
-      await page.getByTestId('password').fill('wrong')
-      await page.getByRole('button', { name: 'login' }).click()
+      await loginWith(page, 'root', 'wrong')
+      const errorDiv = await page.locator('.error')      
+      await expect(errorDiv).toContainText('Wrong credentials')
+      await expect(errorDiv).toHaveCSS('border-style', 'solid')
+      await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
+    })    
+  })
 
-      await expect(page.getByText('Wrong credentials')).toBeVisible()
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {      
+      await loginWith(page, 'root', 'what')
     })
+  
+    test('a new blog can be created', async ({ page }) => {
+      
+      await page.getByRole('button', { name: 'create new' }).click()    
+      await page.getByTestId('title').fill('Title')
+      await page.getByTestId('author').fill('Author')
+      await page.getByTestId('url').fill('url.com')
+      await page.getByRole('button', { name: 'save' }).click()
+
+      await expect(page.getByText('Title Author')).toBeVisible()
+    })
+    
   })
 })
