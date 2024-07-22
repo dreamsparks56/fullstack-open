@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith, newForm } = require('./helper')
+const { newUser, loginWith, newBlog, expandBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -43,20 +43,18 @@ describe('Blog app', () => {
     })
   
     test('a new blog can be created', async ({ page }) => {      
-      await newForm(page, 'Title', 'Author', 'url.com')
+      await newBlog(page, 'Title', 'Author', 'url.com')
       await expect(page.getByText('Title Author')).toBeVisible()
     })
 
     describe('and there is a blog', () => {
       beforeEach(async ({ page }) => {
-        await newForm(page, 'Title', 'Author', 'url.com')
+        await newBlog(page, 'Title', 'Author', 'url.com')
       })
 
       describe('blog operations', () => {
         beforeEach(async ({ page }) => {
-          const collapsedBlogElement =  await page.getByText('Title Author')
-            .locator('..')
-          await collapsedBlogElement.getByRole('button', { name: 'expand' }).click()
+          await expandBlog(page, 'Title Author')
         })
 
         test('the existing blog can be liked', async ({ page }) => {
@@ -76,7 +74,23 @@ describe('Blog app', () => {
   
           await expect(page.getByText('Title by Author was successfully deleted')).toBeVisible()
         })
-      })    
+      })
+
+      test.only('the existing blog can only be deleted by its creator', async ({ page, request }) => {
+        await page.getByRole('button', {name : 'logout'}).click() 
+        await request.post('/api/users', {
+          data: {
+            name: 'Guest User',
+            username: 'guest',
+            password: '12345'
+          }
+        })
+        await loginWith(page, 'guest', '12345')
+        await expandBlog(page, 'Title Author')
+        const expandedBlogElement = await page.getByText('Title Author')
+            .locator('..')
+          await expect(expandedBlogElement).not.toHaveText('remove')
+      })
       
     })
     
