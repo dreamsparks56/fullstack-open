@@ -1,10 +1,10 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith, newForm } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post('http://localhost:3003/api/testing/reset')
-    await request.post('http://localhost:3003/api/users', {
+    await request.post('/api/testing/reset')
+    await request.post('/api/users', {
       data: {
         name: 'Superuser',
         username: 'root',
@@ -12,7 +12,7 @@ describe('Blog app', () => {
       }
     })
   
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
   })
 
   test('Login form is shown', async ({ page }) => {
@@ -42,15 +42,27 @@ describe('Blog app', () => {
       await loginWith(page, 'root', 'what')
     })
   
-    test('a new blog can be created', async ({ page }) => {
-      
-      await page.getByRole('button', { name: 'create new' }).click()    
-      await page.getByTestId('title').fill('Title')
-      await page.getByTestId('author').fill('Author')
-      await page.getByTestId('url').fill('url.com')
-      await page.getByRole('button', { name: 'save' }).click()
-
+    test('a new blog can be created', async ({ page }) => {      
+      await newForm(page, 'Title', 'Author', 'url.com')
       await expect(page.getByText('Title Author')).toBeVisible()
+    })
+
+    describe('and there is a blog', () => {
+      beforeEach(async ({ page }) => {
+        await newForm(page, 'Title', 'Author', 'url.com')
+      })
+    
+      test.only('the existing blog can be deleted', async ({ page }) => {
+        page.on('dialog', dialog => dialog.accept());
+        const collapsedBlogElement =  await page.getByText('Title Author')
+          .locator('..')
+        await collapsedBlogElement.getByRole('button', { name: 'expand' }).click()
+        const expandedBlogElement = await page.getByText('Title Author')
+          .locator('..')
+        await expandedBlogElement.getByRole('button', { name: 'remove' }).click()
+
+        await expect(page.getByText('Title by Author was successfully deleted')).toBeVisible()
+      })
     })
     
   })
