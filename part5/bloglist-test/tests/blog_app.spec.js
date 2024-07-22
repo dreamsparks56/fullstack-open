@@ -51,18 +51,33 @@ describe('Blog app', () => {
       beforeEach(async ({ page }) => {
         await newForm(page, 'Title', 'Author', 'url.com')
       })
-    
-      test.only('the existing blog can be deleted', async ({ page }) => {
-        page.on('dialog', dialog => dialog.accept());
-        const collapsedBlogElement =  await page.getByText('Title Author')
-          .locator('..')
-        await collapsedBlogElement.getByRole('button', { name: 'expand' }).click()
-        const expandedBlogElement = await page.getByText('Title Author')
-          .locator('..')
-        await expandedBlogElement.getByRole('button', { name: 'remove' }).click()
 
-        await expect(page.getByText('Title by Author was successfully deleted')).toBeVisible()
-      })
+      describe('blog operations', () => {
+        beforeEach(async ({ page }) => {
+          const collapsedBlogElement =  await page.getByText('Title Author')
+            .locator('..')
+          await collapsedBlogElement.getByRole('button', { name: 'expand' }).click()
+        })
+
+        test('the existing blog can be liked', async ({ page }) => {
+          page.on('dialog', dialog => dialog.accept());        
+          const expandedBlogElement = await page.getByText('Title Author')
+            .locator('..')
+          await expandedBlogElement.getByRole('button', { name: 'like' }).click()
+  
+          await expect(page.getByTestId('likes')).toContainText('1')
+        })
+
+        test('the existing blog can be deleted', async ({ page }) => {
+          page.on('dialog', dialog => dialog.accept());        
+          const expandedBlogElement = await page.getByText('Title Author')
+            .locator('..')
+          await expandedBlogElement.getByRole('button', { name: 'remove' }).click()
+  
+          await expect(page.getByText('Title by Author was successfully deleted')).toBeVisible()
+        })
+      })    
+      
     })
     
   })
