@@ -102,7 +102,7 @@ const App = () => {
   }
 
   const sortByLikes = () => {
-    setBlogs(blogs.toSorted((a, b) => a.likes - b.likes))
+    setBlogs(blogs.toSorted((a, b) => b.likes - a.likes))
   }
 
   const deleteBlog = (id, title, author) => {
