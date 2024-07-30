@@ -40,6 +40,8 @@ describe('Blog app', () => {
   describe('When logged in', () => {
     beforeEach(async ({ page }) => {      
       await loginWith(page, 'root', 'what')
+      await page.getByText('blogs').waitFor()
+
     })
   
     test('a new blog can be created', async ({ page }) => {      
@@ -76,7 +78,7 @@ describe('Blog app', () => {
         })
       })
 
-      test.only('the existing blog can only be deleted by its creator', async ({ page, request }) => {
+      test('the existing blog can only be deleted by its creator', async ({ page, request }) => {
         await page.getByRole('button', {name : 'logout'}).click() 
         await request.post('/api/users', {
           data: {
@@ -92,6 +94,45 @@ describe('Blog app', () => {
           await expect(expandedBlogElement).not.toHaveText('remove')
       })
       
+    })
+
+    describe('and there are many blogs', () => {
+      const maxBlogs = 5
+      beforeEach(async ({ page }, testInfo) => {
+        testInfo.setTimeout(testInfo.timeout + 7000)
+        let blog = 1;
+        while(blog <= maxBlogs) {
+          await newBlog(page, `Title ${blog}`, 'Author', 'url.com')
+          await page.getByText(`Title ${blog} Author`).waitFor()
+          blog++
+        }
+      })
+
+      test('the existing blogs can be sorted by likes', async ({ page }) => {
+        for(let blog = maxBlogs; blog > 0; blog--) {
+          const blogTitle = `Title ${blog} Author`;
+          await expandBlog(page, blogTitle)
+          const expandedBlogElement = await page.getByText(blogTitle)
+            .locator('..')
+            for(let i = 1; i <= blog; i++) {
+              await expandedBlogElement.getByRole('button', { name: 'like' }).click()
+              await expandedBlogElement.getByTestId('likes').getByText(i).waitFor()
+            }
+        }
+
+        await page.getByRole('button', { name: 'sort by likes' }).click()
+
+        const blogs = await page.getByText(/Title \d Author/)
+          .locator('..')        
+          .filter({ has: page.getByRole('button', { name: 'collapse' }) })
+          .all()
+        for(let i = 0; i < maxBlogs; i++) {
+          await expect(blogs[i].getByTestId('likes')).toContainText(`${maxBlogs - i}`)          
+        }
+      })
+
+
+
     })
     
   })

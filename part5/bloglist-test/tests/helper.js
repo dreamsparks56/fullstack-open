@@ -6,7 +6,9 @@ const loginWith = async (page, username, password)  => {
   }
 
   const newBlog = async (page, title, author, url)  => {
-    await page.getByRole('button', { name: 'create new' }).click()    
+    const createNew = page.getByRole('button', { name: 'create new' })
+    if (await createNew.isVisible())
+      await createNew.click()
     await page.getByTestId('title').fill(title)
     await page.getByTestId('author').fill(author)
     await page.getByTestId('url').fill(url)
@@ -14,8 +16,9 @@ const loginWith = async (page, username, password)  => {
   }
 
   const expandBlog = async (page, text) => {
-    const collapsedBlogElement =  await page.getByText(text)
-      .locator('..')
+    const collapsedBlogElement = await page.getByText(text)
+    .locator('..')
+  .filter({ has: page.getByRole('button', { name: 'expand' }) })
     await collapsedBlogElement.getByRole('button', { name: 'expand' }).click()
   }
   
