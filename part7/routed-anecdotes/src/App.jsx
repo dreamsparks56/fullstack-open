@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
-  BrowserRouter as Router,
-  Routes, Route, Link, useMatch
+  Routes, Route, useMatch
 } from 'react-router-dom'
 import Menu from './components/Menu'
 import CreateNew from './components/CreateNew'
@@ -9,7 +8,7 @@ import About from './components/About'
 import AnecdoteList from './components/AnecdoteList'
 import Anecdote from './components/Anecdote'
 import Footer from './components/Footer'
-
+import Notification from './components/Notification'
 
 const App = () => {
 
@@ -41,6 +40,15 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+    handleNotification(`A new anecdote titled '${anecdote.content}' has been created`)
+    
+  }
+
+  const handleNotification = (message) => {
+    const msLength = 5000
+    
+    setNotification(message)
+    setTimeout(() => setNotification(''), msLength)
   }
 
   const anecdoteById = (id) =>
@@ -60,6 +68,7 @@ const App = () => {
   return (
     <div>
       <Menu />
+      <Notification message={notification} success={true} />
       <Routes>
         <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />} />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
