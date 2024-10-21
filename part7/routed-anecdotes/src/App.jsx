@@ -1,34 +1,18 @@
 import { useState } from 'react'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route, Link, useMatch
 } from 'react-router-dom'
+import Menu from './components/Menu'
 import CreateNew from './components/CreateNew'
 import About from './components/About'
 import AnecdoteList from './components/AnecdoteList'
+import Anecdote from './components/Anecdote'
+import Footer from './components/Footer'
 
-const Menu = () => {
-  const padding = {
-    paddingRight: 5
-  }
-  return (    
-  <div>
-    <Link style={padding} to="/">anecdotes</Link>
-    <Link style={padding} to="/create">create new</Link>
-    <Link style={padding} to="/about">about</Link>
-  </div>
-  )
-}
-
-const Footer = () => (
-  <div>
-    Anecdote app for <a href='https://fullstackopen.com/'>Full Stack Open</a>.
-
-    See <a href='https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js'>https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js</a> for the source code.
-  </div>
-)
 
 const App = () => {
+
   const [anecdotes, setAnecdotes] = useState([
     {
       content: 'If it hurts, do it more often',
@@ -47,6 +31,12 @@ const App = () => {
   ])
 
   const [notification, setNotification] = useState('')
+
+  const match = useMatch('/anecdotes/:id')
+  const anecdote = match 
+    ? anecdotes.find(anecdote => anecdote.id === Number(match.params.id))
+    : null
+
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
@@ -68,15 +58,16 @@ const App = () => {
   }
 
   return (
-    <Router>
+    <div>
       <Menu />
       <Routes>
+        <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />} />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path="/create" element={<CreateNew addNew={addNew} /> }/>
         <Route path="/about" element={<About /> } />
       </Routes>
       <Footer />
-    </Router>
+    </div>
   )
 }
 
