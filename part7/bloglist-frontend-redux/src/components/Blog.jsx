@@ -1,7 +1,11 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { likeBlog, removeBlog } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
-const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
+const Blog = ({ blog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
+  const dispatch = useDispatch()
 
   const blogStyle = {
     paddingTop: 10,
@@ -25,21 +29,22 @@ const Blog = ({ blog, updateBlog, deleteBlog, verifyId }) => {
 
   const handleLike = (event) => {
     event.preventDefault()
-
-    updateBlog(blog.id, {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes + 1,
-    })
+    dispatch(likeBlog(blog))
+    dispatch(setNotification(
+      `the blog ${blog.title} by ${blog.author} was successfully updated`,
+      true,
+    ))
   }
+
 
   const deleteButton = () => <button onClick={handleDelete}>remove</button>
 
   const handleDelete = (event) => {
     event.preventDefault()
-
-    deleteBlog(blog.id, blog.title, blog.author)
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      dispatch(removeBlog(blog.id))
+      dispatch(setNotification(`${blog.title} by ${blog.author} was successfully deleted`, true))
+    }
   }
 
   const blogExpanded = () => (

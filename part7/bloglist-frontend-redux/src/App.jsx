@@ -75,27 +75,8 @@ const App = () => {
     ))
   }
 
-  const updateBlog = (id, blogObject) => {
-    blogService.update(id, blogObject).then((returnedBlog) => {
-      setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)))
-      dispatch(setNotification(
-        `${returnedBlog.title} by ${returnedBlog.author} was successfully updated`,
-        true,
-      ))
-    })
-  }
-
   const sortByLikes = () => {
     setBlogs(blogs.toSorted((a, b) => b.likes - a.likes))
-  }
-
-  const deleteBlog = (id, title, author) => {
-    if (window.confirm(`Remove blog ${title} by ${author}?`)) {
-      blogService.deleteBlog(id).then(() => {
-        setBlogs(blogs.filter((blog) => blog.id !== id))
-        dispatch(setNotification(`${title} by ${author} was successfully deleted`, true))
-      })
-    }
   }
 
   const dashboard = () => (
@@ -121,8 +102,6 @@ const App = () => {
           <Blog
             key={blog.id}
             blog={blog}
-            updateBlog={updateBlog}
-            deleteBlog={deleteBlog}
             verifyId={verifyId}
           />
         ))}
