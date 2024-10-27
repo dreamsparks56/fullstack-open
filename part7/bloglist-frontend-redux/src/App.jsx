@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
@@ -6,12 +7,14 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [message, setMessage] = useState(null)
   const [success, setSuccess] = useState(false)
   const [user, setUser] = useState(null)
+  const dispatch = useDispatch()
 
   useEffect((user) => {
     user && getBlogs()
@@ -34,16 +37,6 @@ const App = () => {
     return blogService.verifyId(id)
   }
 
-  const handleNotification = (message, success) => {
-    const length = 5000
-
-    setMessage(message)
-    setSuccess(success)
-    setTimeout(() => {
-      setMessage(null)
-    }, length)
-  }
-
   const handleLogin = async ({ username, password }) => {
     try {
       const user = await loginService.login({
@@ -56,7 +49,7 @@ const App = () => {
       setUser(user)
       getBlogs()
     } catch (exception) {
-      handleNotification('Wrong credentials', false)
+      dispatch(setNotification('Wrong credentials', false))
     }
   }
 
@@ -84,20 +77,20 @@ const App = () => {
       .create({ ...blogObject, userId: user._id })
       .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog))
-        handleNotification(
+        dispatch(setNotification(
           `a new blog ${blogObject.title} by ${blogObject.author} added`,
           true,
-        )
+        ))
       })
   }
 
   const updateBlog = (id, blogObject) => {
     blogService.update(id, blogObject).then((returnedBlog) => {
       setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)))
-      handleNotification(
+      dispatch(setNotification(
         `${returnedBlog.title} by ${returnedBlog.author} was successfully updated`,
         true,
-      )
+      ))
     })
   }
 
@@ -109,10 +102,7 @@ const App = () => {
     if (window.confirm(`Remove blog ${title} by ${author}?`)) {
       blogService.deleteBlog(id).then(() => {
         setBlogs(blogs.filter((blog) => blog.id !== id))
-        handleNotification(
-          `${title} by ${author} was successfully deleted`,
-          true,
-        )
+        dispatch(setNotification(`${title} by ${author} was successfully deleted`, true))
       })
     }
   }
@@ -146,7 +136,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={message} success={success} />
+      <Notification />
 
       {!user && loginForm()}
       {user && dashboard()}

@@ -7,19 +7,21 @@ const Notification = ({ message, success }) => {
 
   const color = success ? 'green' : 'red'
 
-  const notificationStyle =
-    {
-      color: `${color}`,
-      background: 'lightgrey',
-      fontSize: 20,
-      borderStyle: 'solid',
-      borderRadius: 5,
-      padding: 10,
-      marginBottom: 10
-    }
+  const notificationStyle = {
+    color: `${color}`,
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  }
 
   return (
-    <div className = {success ? 'success' : 'error'} style= {message ? notificationStyle : null}>
+    <div
+      className={success ? 'success' : 'error'}
+      style={message ? notificationStyle : null}
+    >
       {message}
     </div>
   )
@@ -27,7 +29,7 @@ const Notification = ({ message, success }) => {
 
 Notification.propTypes = {
   message: PropTypes.string.isRequired,
-  success: PropTypes.bool.isRequired
+  success: PropTypes.bool.isRequired,
 }
 
 export default Notification
