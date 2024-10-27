@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
@@ -7,18 +7,13 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
 import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [message, setMessage] = useState(null)
-  const [success, setSuccess] = useState(false)
   const [user, setUser] = useState(null)
   const dispatch = useDispatch()
-
-  useEffect((user) => {
-    user && getBlogs()
-  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -29,9 +24,9 @@ const App = () => {
     }
   }, [])
 
-  const getBlogs = () => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }
+  useEffect((user) => {
+    user && dispatch(initializeBlogs())
+  }, [])
 
   const verifyId = (id) => {
     return blogService.verifyId(id)
@@ -47,7 +42,7 @@ const App = () => {
       blogService.setToken(user.token)
 
       setUser(user)
-      getBlogs()
+      dispatch(initializeBlogs())
     } catch (exception) {
       dispatch(setNotification('Wrong credentials', false))
     }
@@ -73,15 +68,11 @@ const App = () => {
   )
 
   const addBlog = (blogObject) => {
-    blogService
-      .create({ ...blogObject, userId: user._id })
-      .then((returnedBlog) => {
-        setBlogs(blogs.concat(returnedBlog))
-        dispatch(setNotification(
-          `a new blog ${blogObject.title} by ${blogObject.author} added`,
-          true,
-        ))
-      })
+    dispatch(createBlog({ ...blogObject, userId: user._id }))
+    dispatch(setNotification(
+      `a new blog ${blogObject.title} by ${blogObject.author} added`,
+      true,
+    ))
   }
 
   const updateBlog = (id, blogObject) => {
@@ -113,26 +104,31 @@ const App = () => {
         {user.name} logged in
         <button onClick={logout}>logout</button>
       </div>
-      {blogSection()}
+      <BlogSection />
       {blogForm()}
     </div>
   )
 
-  const blogSection = () => (
-    <div>
-      <h2>blogs</h2>
-      <button onClick={sortByLikes}>sort by likes</button>
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          updateBlog={updateBlog}
-          deleteBlog={deleteBlog}
-          verifyId={verifyId}
-        />
-      ))}
-    </div>
-  )
+  const BlogSection = () => {
+    const blogs = useSelector(state => {
+      return state.blogs
+    })
+    return(
+      <div>
+        <h2>blogs</h2>
+        <button onClick={sortByLikes}>sort by likes</button>
+        {blogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            updateBlog={updateBlog}
+            deleteBlog={deleteBlog}
+            verifyId={verifyId}
+          />
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div>
