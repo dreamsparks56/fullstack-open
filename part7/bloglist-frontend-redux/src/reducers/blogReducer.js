@@ -14,8 +14,8 @@ const blogSlice = createSlice({
     setBlogs(state, action) {
       return action.payload
     },
-    setToken(state, action) {
-      return action.payload
+    sortByLikes(state, action) {
+      return state.toSorted((a, b) => b.likes - a.likes)
     },
     updateBlog(state, action) {
       return state.map(blog => blog.id !== action.payload.id ? blog : action.payload)
@@ -26,7 +26,7 @@ const blogSlice = createSlice({
   },
 })
 
-export const { appendBlog, setBlogs, updateBlog, deleteBlog } = blogSlice.actions
+export const { appendBlog, setBlogs, updateBlog, deleteBlog, sortByLikes } = blogSlice.actions
 
 export const initializeBlogs = () => {
   return async dispatch => {
