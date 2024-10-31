@@ -20,7 +20,6 @@ const Notification = () => {
       className={notification.success ? 'success' : 'error'}
       style={notification.message ? notificationStyle : null}
     >
-      {console.log(notification)}
       {notification.message}
     </div>
   )

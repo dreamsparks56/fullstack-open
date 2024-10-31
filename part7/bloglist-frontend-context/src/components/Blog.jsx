@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { likeBlog, removeBlog } from '../reducers/blogReducer'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNotificationDispatch } from '../NotificationContext'
+import blogService from '../services/blogs'
 
 const Blog = ({ blog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
-  const dispatch = useDispatch()
+  const queryClient = useQueryClient()
   const notify = useNotificationDispatch()
 
   const blogStyle = {
@@ -28,10 +28,25 @@ const Blog = ({ blog, verifyId }) => {
 
   const toggler = (label) => <button onClick={toggleExpanded}>{label}</button>
 
+  const likeBlogMutation = useMutation({
+    mutationFn: (blogObject) => blogService.update(blog.id, blogObject),
+    onSuccess: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog))
+    },
+  })
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.deleteBlog,
+    onSuccess: () => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.filter(keptBlog => keptBlog.id !== blog.id))
+    }
+  })
+
   const handleLike = (event) => {
     event.preventDefault()
-    dispatch(likeBlog(blog))
-
+    likeBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
     const msLength = 5000
     notify({ type: 'SET', payload: {
       message: `the blog ${blog.title} by ${blog.author} was successfully updated`,
@@ -47,7 +62,7 @@ const Blog = ({ blog, verifyId }) => {
   const handleDelete = (event) => {
     event.preventDefault()
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      dispatch(removeBlog(blog.id))
+      deleteBlogMutation.mutate(blog.id)
 
       const msLength = 5000
       notify({ type: 'SET', payload: {

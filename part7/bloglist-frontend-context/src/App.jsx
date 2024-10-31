@@ -7,7 +7,6 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import { setUser } from './reducers/userReducer'
-import { initializeBlogs } from './reducers/blogReducer'
 
 const App = () => {
   const user = useSelector(state => state.user)

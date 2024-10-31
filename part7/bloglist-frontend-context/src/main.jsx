@@ -6,13 +6,11 @@ import { NotificationContextProvider } from './NotificationContext'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import blogReducer from './reducers/blogReducer'
 import userReducer from './reducers/userReducer'
 
 const store = configureStore({
   reducer: {
-    user: userReducer,
-    blogs: blogReducer
+    user: userReducer
   }
 })
 
