@@ -26,7 +26,6 @@ const App = () => {
 
   useEffect(() => {
     user && window.localStorage.setItem('loggedUser', JSON.stringify(user))
-    user && dispatch(initializeBlogs())
   }, [user])
 
   const verifyId = (id) => {

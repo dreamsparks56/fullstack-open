@@ -21,9 +21,9 @@ export const login = (credentials) => {
       blogService.setToken(userInfo.token)
       await dispatch(setUser(userInfo))
     } catch (exception) {
-      throw "Wrong credentials"
+      throw 'Wrong credentials'
     }
-    
+
   }
 }
 

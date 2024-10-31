@@ -1,11 +1,11 @@
-import { createContext, useReducer, useContext } from "react"
+import { createContext, useReducer, useContext } from 'react'
 
 const notificationReducer = (state, action) => {
   switch (action.type) {
-  case "SET":
+  case 'SET':
     return action.payload
-  case "RESET":
-    return ""
+  case 'RESET':
+    return ''
   default:
     return state
   }
@@ -14,7 +14,7 @@ const notificationReducer = (state, action) => {
 const NotificationContext = createContext()
 
 export const NotificationContextProvider = (props) => {
-  const [notification, notificationDispatch] = useReducer(notificationReducer, "")
+  const [notification, notificationDispatch] = useReducer(notificationReducer, '')
 
   return (
     <NotificationContext.Provider value={[notification, notificationDispatch] }>

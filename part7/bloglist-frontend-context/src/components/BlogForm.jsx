@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { createBlog } from '../reducers/blogReducer'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import blogService from '../services/blogs'
 import { useNotificationDispatch } from '../NotificationContext'
 
 const BlogForm = () => {
@@ -11,6 +12,16 @@ const BlogForm = () => {
   const dispatch = useDispatch()
   const notify = useNotificationDispatch()
 
+  const queryClient = useQueryClient()
+
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.concat(newBlog))
+    }
+  })
+
   const addBlog = (event) => {
     event.preventDefault()
 
@@ -20,15 +31,15 @@ const BlogForm = () => {
       url: newBlogURL,
     }
 
-    dispatch(createBlog(newBlog))
+    newBlogMutation.mutate(newBlog)
     const msLength = 5000
-    notify({ type: "SET", payload: {
+    notify({ type: 'SET', payload: {
       message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
       success: true
     }
     })
-    
-    setTimeout(() => { notify({ type: "RESET" }) }, msLength)
+
+    setTimeout(() => { notify({ type: 'RESET' }) }, msLength)
     setNewBlogTitle('')
     setNewBlogAuthor('')
     setNewBlogURL('')

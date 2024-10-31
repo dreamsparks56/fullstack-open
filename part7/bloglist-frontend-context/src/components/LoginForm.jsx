@@ -17,12 +17,12 @@ const LoginForm = () => {
       }))
     } catch (exception) {
       const msLength = 5000
-      notify({ type: "SET", payload: {
+      notify({ type: 'SET', payload: {
         message: exception,
         success: false
       }
       })
-      setTimeout(() => { notify({ type: "RESET" }) }, msLength)
+      setTimeout(() => { notify({ type: 'RESET' }) }, msLength)
     }
   }
 

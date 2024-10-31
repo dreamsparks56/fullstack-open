@@ -31,14 +31,14 @@ const Blog = ({ blog, verifyId }) => {
   const handleLike = (event) => {
     event.preventDefault()
     dispatch(likeBlog(blog))
-    
+
     const msLength = 5000
-    notify({ type: "SET", payload: {
+    notify({ type: 'SET', payload: {
       message: `the blog ${blog.title} by ${blog.author} was successfully updated`,
       success: true
     }
-    })    
-    setTimeout(() => { notify({ type: "RESET" }) }, msLength)
+    })
+    setTimeout(() => { notify({ type: 'RESET' }) }, msLength)
   }
 
 
@@ -48,14 +48,14 @@ const Blog = ({ blog, verifyId }) => {
     event.preventDefault()
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       dispatch(removeBlog(blog.id))
-    
+
       const msLength = 5000
-      notify({ type: "SET", payload: {
+      notify({ type: 'SET', payload: {
         message: `${blog.title} by ${blog.author} was successfully deleted`,
         success: true
       }
-      })    
-      setTimeout(() => { notify({ type: "RESET" }) }, msLength)
+      })
+      setTimeout(() => { notify({ type: 'RESET' }) }, msLength)
     }
   }
 
