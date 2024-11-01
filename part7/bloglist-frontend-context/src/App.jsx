@@ -10,16 +10,18 @@ import blogService from './services/blogs'
 import userService from './services/users'
 import UserSection from './components/UserSection'
 import User from './components/User'
+import Blog from './components/Blog'
+import BlogDetails from './components/BlogDetails'
 
 
 const App = () => {
   const userDispatch = useUserDispatch()
   const [users, setUsers] = useState([])
+  const [blogs, setBlogs] = useState([])
   const user = useUserValue()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
-    console.log(user)
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       if (user) {
@@ -37,9 +39,22 @@ const App = () => {
       })
   }, [])
 
-  const match = useMatch('/users/:id')
-  const routeUser = match ?
-    users.find(user => user.id === match.params.id)
+  useEffect(() => {
+    blogService
+      .getAll()
+      .then(acquiredBlogs => {
+        setBlogs(acquiredBlogs)
+      })
+  }, [])
+
+  const userMatch = useMatch('/users/:id')
+  const routeUser = userMatch ?
+    users.find(user => user.id === userMatch.params.id)
+    : null
+
+  const blogMatch = useMatch('/:id')
+  const routeBlog = blogMatch ?
+    blogs.find(blog => blog.id === blogMatch.params.id)
     : null
 
   const blogFormRef = useRef()
@@ -72,8 +87,8 @@ const App = () => {
         <button onClick={logout}>logout</button>
       </div>
       <Routes>
-        {console.log(users)}
         <Route path="/users/:id" element={<User user={routeUser} />} />
+        <Route path="/:id" element={<BlogDetails blog={routeBlog} verifyId={verifyId} />} />
         <Route path='/users' element={ <UserSection /> }/>
         <Route path='/' element={ <BlogSection verifyId={verifyId}/> } />
       </Routes>

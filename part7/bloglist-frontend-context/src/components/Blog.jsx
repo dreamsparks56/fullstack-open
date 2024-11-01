@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNotificationDispatch } from '../NotificationContext'
 import blogService from '../services/blogs'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ blog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -18,7 +19,8 @@ const Blog = ({ blog, verifyId }) => {
 
   const blogMain = () => (
     <div>
-      {blog.title} {blog.author} {toggler('expand')}
+      <Link to={`/${blog.id}`}>{blog.title}</Link>
+      {blog.author} {toggler('expand')}
     </div>
   )
 
@@ -77,7 +79,8 @@ const Blog = ({ blog, verifyId }) => {
   const blogExpanded = () => (
     <div>
       <div>
-        {blog.title} {blog.author}
+        <Link to={`/${blog.id}`}>{blog.title}</Link>
+        {blog.author}
       </div>
       <div>{blog.url}</div>
       <div data-testid="likes">
