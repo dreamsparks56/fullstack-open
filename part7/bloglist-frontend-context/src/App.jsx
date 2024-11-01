@@ -1,16 +1,20 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useUserDispatch, useUserValue } from './UserContext'
+import { Route, Routes, useMatch } from 'react-router-dom'
 import BlogSection from './components/BlogSection'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
-import { useUserDispatch, useUserValue } from './UserContext'
-import { Route, Routes } from 'react-router-dom'
+import userService from './services/users'
 import UserSection from './components/UserSection'
+import User from './components/User'
+
 
 const App = () => {
   const userDispatch = useUserDispatch()
+  const [users, setUsers] = useState([])
   const user = useUserValue()
 
   useEffect(() => {
@@ -24,6 +28,21 @@ const App = () => {
       }
     }
   }, [])
+
+  useEffect(() => {
+    userService
+      .getAll()
+      .then(acquiredUsers => {
+        setUsers(acquiredUsers)
+      })
+  }, [])
+
+  const match = useMatch('/users/:id')
+  const routeUser = match ?
+    users.find(user => user.id === match.params.id)
+    : null
+
+  const blogFormRef = useRef()
 
   const verifyId = (id) => {
     return blogService.verifyId(id)
@@ -40,8 +59,6 @@ const App = () => {
     userDispatch({ type: 'LOGOUT' })
   }
 
-  const blogFormRef = useRef()
-
   const blogForm = () => (
     <Togglable buttonLabel="create new" ref={blogFormRef}>
       <BlogForm />
@@ -55,8 +72,10 @@ const App = () => {
         <button onClick={logout}>logout</button>
       </div>
       <Routes>
+        {console.log(users)}
+        <Route path="/users/:id" element={<User user={routeUser} />} />
         <Route path='/users' element={ <UserSection /> }/>
-        <Route path='/blogs' element={ <BlogSection verifyId={verifyId}/> } />
+        <Route path='/' element={ <BlogSection verifyId={verifyId}/> } />
       </Routes>
       {blogForm()}
     </div>

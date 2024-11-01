@@ -1,16 +1,20 @@
-import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import userService from '../services/users'
+import { useQuery } from '@tanstack/react-query'
 
 const UserSection = () => {
-  const [users, setUsers] = useState([])
+  const result = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getAll,
+    refetchOnWindowFocus: false
+  })
 
-  useEffect(() => {
-    userService
-      .getAll()
-      .then(acquiredUsers => {
-        setUsers(acquiredUsers)
-      })
-  }, [])
+  if ( result.isLoading ) {
+    return <div>loading data...</div>
+  }
+
+  const users = result.data
+
 
   return (
     <div>
@@ -25,7 +29,7 @@ const UserSection = () => {
         <tbody>
           {users.map(user =>
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td><Link to={ `/users/${user.id}` }>{user.name}</Link></td>
               <td>{user.blogs.length}</td>
             </tr>
           )}
