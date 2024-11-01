@@ -6,6 +6,8 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import { useUserDispatch, useUserValue } from './UserContext'
+import { Route, Routes } from 'react-router-dom'
+import UserSection from './components/UserSection'
 
 const App = () => {
   const userDispatch = useUserDispatch()
@@ -52,7 +54,10 @@ const App = () => {
         {user.name} logged in
         <button onClick={logout}>logout</button>
       </div>
-      <BlogSection verifyId={verifyId}/>
+      <Routes>
+        <Route path='/users' element={ <UserSection /> }/>
+        <Route path='/blogs' element={ <BlogSection verifyId={verifyId}/> } />
+      </Routes>
       {blogForm()}
     </div>
   )
