@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import blogService from '../services/blogs'
 import { useNotificationDispatch } from '../NotificationContext'
@@ -9,7 +8,6 @@ const BlogForm = () => {
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
   const [newBlogURL, setNewBlogURL] = useState('')
 
-  const dispatch = useDispatch()
   const notify = useNotificationDispatch()
 
   const queryClient = useQueryClient()

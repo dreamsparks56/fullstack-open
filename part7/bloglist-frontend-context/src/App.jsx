@@ -1,31 +1,27 @@
 import { useEffect, useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import BlogSection from './components/BlogSection'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
-import { setUser } from './reducers/userReducer'
+import { useUserDispatch, useUserValue } from './UserContext'
 
 const App = () => {
-  const user = useSelector(state => state.user)
-  const dispatch = useDispatch()
+  const userDispatch = useUserDispatch()
+  const user = useUserValue()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
+    console.log(user)
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       if (user) {
-        dispatch(setUser(user))
         blogService.setToken(user.token)
+        userDispatch({ type: 'LOGIN', payload: user })
       }
     }
   }, [])
-
-  useEffect(() => {
-    user && window.localStorage.setItem('loggedUser', JSON.stringify(user))
-  }, [user])
 
   const verifyId = (id) => {
     return blogService.verifyId(id)
@@ -39,7 +35,7 @@ const App = () => {
 
   const logout = () => {
     window.localStorage.removeItem('loggedUser')
-    dispatch(setUser(null))
+    userDispatch({ type: 'LOGOUT' })
   }
 
   const blogFormRef = useRef()

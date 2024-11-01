@@ -1,29 +1,37 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { login } from '../reducers/userReducer'
+import loginService from '../services/login'
+import blogService from '../services/blogs'
+import { useMutation } from '@tanstack/react-query'
+import { useUserDispatch } from '../UserContext'
 import { useNotificationDispatch } from '../NotificationContext'
 
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const dispatch = useDispatch()
+
+  const login = useUserDispatch()
   const notify = useNotificationDispatch()
 
-  const handleLogin = async ({ username, password }) => {
-    try {
-      await dispatch(login({
-        username,
-        password,
-      }))
-    } catch (exception) {
+  const loginMutation = useMutation({
+    mutationFn: loginService.login,
+    onSuccess: (user) => {
+      blogService.setToken(user.token)
+      window.localStorage.setItem('loggedUser', JSON.stringify(user))
+      login({ type: 'LOGIN', payload: user })
+    },
+    onError: (error) => {
       const msLength = 5000
       notify({ type: 'SET', payload: {
-        message: exception,
+        message: error,
         success: false
       }
       })
       setTimeout(() => { notify({ type: 'RESET' }) }, msLength)
     }
+  })
+
+  const handleLogin = async ({ username, password }) => {
+    loginMutation.mutate({ username, password })
   }
 
   const handleSubmit = (event) => {
