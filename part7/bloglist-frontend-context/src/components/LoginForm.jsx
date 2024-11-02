@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import loginService from '../services/login'
 import blogService from '../services/blogs'
+import commentService from '../services/comments'
 import { useMutation } from '@tanstack/react-query'
 import { useUserDispatch } from '../UserContext'
 import { useNotificationDispatch } from '../NotificationContext'
@@ -16,6 +17,7 @@ const LoginForm = () => {
     mutationFn: loginService.login,
     onSuccess: (user) => {
       blogService.setToken(user.token)
+      commentService.setToken(user.token)
       window.localStorage.setItem('loggedUser', JSON.stringify(user))
       login({ type: 'LOGIN', payload: user })
     },

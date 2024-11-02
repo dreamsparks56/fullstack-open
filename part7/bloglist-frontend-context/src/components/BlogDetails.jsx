@@ -1,8 +1,14 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNotificationDispatch } from '../NotificationContext'
 import blogService from '../services/blogs'
+import commentService from '../services/comments'
+import { useState } from 'react'
 
 const BlogDetails = ({ blogInfo }) => {
+  const [comment, setComment] = useState('')
+
+  const queryClient = useQueryClient()
+
   const notify = useNotificationDispatch()
   const result = useQuery({
     queryKey: ['blog'],
@@ -18,6 +24,14 @@ const BlogDetails = ({ blogInfo }) => {
     },
   })
 
+  const commentBlogMutation = useMutation({
+    mutationFn: commentService.createNew,
+    onSuccess: (newComment) => {
+      const blog = queryClient.getQueryData(['blog'])
+      queryClient.setQueryData(['blog'], { ...blog, comments: blog.comments.concat(newComment) })
+    }
+  })
+
   const handleLike = (event) => {
     event.preventDefault()
     likeBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
@@ -28,6 +42,14 @@ const BlogDetails = ({ blogInfo }) => {
     }
     })
     setTimeout(() => { notify({ type: 'RESET' }) }, msLength)
+  }
+
+  const handleComment = (event) => {
+    event.preventDefault()
+    commentBlogMutation.mutate({
+      content: comment,
+      blogId: blog.id
+    })
   }
 
   if(!blog) {
@@ -49,6 +71,15 @@ const BlogDetails = ({ blogInfo }) => {
           <li key={comment.id}>{comment.content}</li>
         )}
       </ul>
+      <form onSubmit={handleComment}>
+        <input
+          type="text"
+          value={comment}
+          name="Comment"
+          onChange={(event) => setComment(event.target.value)}
+        />
+        <button type="submit">add coment</button>
+      </form>
     </div>
 
   )

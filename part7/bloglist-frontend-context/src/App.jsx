@@ -9,6 +9,7 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import userService from './services/users'
+import commentService from './services/comments'
 import UserSection from './components/UserSection'
 import User from './components/User'
 import BlogDetails from './components/BlogDetails'
@@ -26,6 +27,7 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       if (user) {
         blogService.setToken(user.token)
+        commentService.setToken(user.token)
         userDispatch({ type: 'LOGIN', payload: user })
       }
     }
