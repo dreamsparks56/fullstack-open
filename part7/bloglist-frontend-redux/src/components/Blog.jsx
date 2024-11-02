@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { likeBlog, removeBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const Blog = ({ blog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const dispatch = useDispatch()
+  
+  const blogRoute = `/blogs/${blog.id}`
 
   const blogStyle = {
     paddingTop: 10,
@@ -17,7 +20,8 @@ const Blog = ({ blog, verifyId }) => {
 
   const blogMain = () => (
     <div>
-      {blog.title} {blog.author} {toggler('expand')}
+      <Link to={blogRoute}>{blog.title}</Link>
+      {blog.author} {toggler('expand')}
     </div>
   )
 
@@ -50,7 +54,8 @@ const Blog = ({ blog, verifyId }) => {
   const blogExpanded = () => (
     <div>
       <div>
-        {blog.title} {blog.author}
+      <Link to={blogRoute}>{blog.title}</Link>
+      {blog.author}
       </div>
       <div>{blog.url}</div>
       <div data-testid="likes">

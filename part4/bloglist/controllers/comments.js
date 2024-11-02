@@ -13,8 +13,6 @@ commentsRouter.post('/', async (request, response) => {
       error: 'token invalid'
     })
   }
-  console.log(body)
-  console.log(blog)
 
   const comment = new Comment({
     content: body.content,
