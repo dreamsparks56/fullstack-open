@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useUserDispatch, useUserValue } from './UserContext'
 import { Route, Routes, useMatch } from 'react-router-dom'
+import NavBar from './components/NavBar'
 import BlogSection from './components/BlogSection'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
@@ -10,7 +11,6 @@ import blogService from './services/blogs'
 import userService from './services/users'
 import UserSection from './components/UserSection'
 import User from './components/User'
-import Blog from './components/Blog'
 import BlogDetails from './components/BlogDetails'
 
 
@@ -52,7 +52,7 @@ const App = () => {
     users.find(user => user.id === userMatch.params.id)
     : null
 
-  const blogMatch = useMatch('/:id')
+  const blogMatch = useMatch('/blogs/:id')
   const routeBlog = blogMatch ?
     blogs.find(blog => blog.id === blogMatch.params.id)
     : null
@@ -69,11 +69,6 @@ const App = () => {
     </Togglable>
   )
 
-  const logout = () => {
-    window.localStorage.removeItem('loggedUser')
-    userDispatch({ type: 'LOGOUT' })
-  }
-
   const blogForm = () => (
     <Togglable buttonLabel="create new" ref={blogFormRef}>
       <BlogForm />
@@ -82,13 +77,10 @@ const App = () => {
 
   const dashboard = () => (
     <div>
-      <div>
-        {user.name} logged in
-        <button onClick={logout}>logout</button>
-      </div>
+      <NavBar />
       <Routes>
         <Route path="/users/:id" element={<User user={routeUser} />} />
-        <Route path="/:id" element={<BlogDetails blog={routeBlog} verifyId={verifyId} />} />
+        <Route path="/blogs/:id" element={<BlogDetails blogInfo={routeBlog} verifyId={verifyId} />} />
         <Route path='/users' element={ <UserSection /> }/>
         <Route path='/' element={ <BlogSection verifyId={verifyId}/> } />
       </Routes>

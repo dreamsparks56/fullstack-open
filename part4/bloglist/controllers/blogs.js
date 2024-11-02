@@ -10,6 +10,7 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id)
+    .populate('comments', { content: 1 })
   if (blog) {
     response.json(blog)
   } else {
@@ -18,6 +19,7 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
+  console.log(request)
   const body = request.body
 
   const decodedToken = jwt.verify(request.token, process.env.SECRET)

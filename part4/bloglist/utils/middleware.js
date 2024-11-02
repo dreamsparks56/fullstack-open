@@ -1,6 +1,7 @@
 const logger = require('./logger')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const Blog = require('../models/blog')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -33,6 +34,20 @@ const userExtractor = (request, response, next) => {
   next()
 }
 
+const blogExtractor = (request, response, next) => {
+  const comment = request.body
+  console.log(comment.blogId)
+  const blog = Blog.findById(comment.blogId)
+
+  if (!blog) {
+    return response.status(401).json({
+      error: 'blog not found'
+    })
+  }
+  request.blog = blog
+  next()
+}
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
@@ -56,5 +71,6 @@ module.exports = {
   unknownEndpoint,
   tokenExtractor,
   userExtractor,
+  blogExtractor,
   errorHandler
 }

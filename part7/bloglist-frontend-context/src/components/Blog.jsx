@@ -17,9 +17,11 @@ const Blog = ({ blog, verifyId }) => {
     marginBottom: 5,
   }
 
+  const blogRoute = `/blogs/${blog.id}`
+
   const blogMain = () => (
     <div>
-      <Link to={`/${blog.id}`}>{blog.title}</Link>
+      <Link to={blogRoute}>{blog.title}</Link>
       {blog.author} {toggler('expand')}
     </div>
   )
@@ -79,7 +81,7 @@ const Blog = ({ blog, verifyId }) => {
   const blogExpanded = () => (
     <div>
       <div>
-        <Link to={`/${blog.id}`}>{blog.title}</Link>
+        <Link to={blogRoute}>{blog.title}</Link>
         {blog.author}
       </div>
       <div>{blog.url}</div>
