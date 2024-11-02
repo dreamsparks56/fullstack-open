@@ -5,6 +5,7 @@ import { setUser } from './reducers/userReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import { initializeUsers } from './reducers/usersReducer'
 import blogService from './services/blogs'
+import commentService from './services/comments'
 import NavBar from './components/NavBar'
 import BlogSection from './components/BlogSection'
 import Notification from './components/Notification'
@@ -28,6 +29,7 @@ const App = () => {
       if (user) {
         dispatch(setUser(user))
         blogService.setToken(user.token)
+        commentService.setToken(user.token)
       }
     }
   }, [])

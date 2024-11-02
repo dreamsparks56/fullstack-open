@@ -4,8 +4,8 @@ import { commentBlog, likeBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const BlogDetails = ({ blog }) => {
-    const dispatch = useDispatch()
-    const [comment, setComment] = useState('')
+  const dispatch = useDispatch()
+  const [comment, setComment] = useState('')
 
   const handleLike = (event) => {
     event.preventDefault()

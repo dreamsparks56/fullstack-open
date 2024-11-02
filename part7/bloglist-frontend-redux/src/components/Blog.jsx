@@ -7,7 +7,7 @@ import { setNotification } from '../reducers/notificationReducer'
 const Blog = ({ blog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const dispatch = useDispatch()
-  
+
   const blogRoute = `/blogs/${blog.id}`
 
   const blogStyle = {
@@ -54,8 +54,8 @@ const Blog = ({ blog, verifyId }) => {
   const blogExpanded = () => (
     <div>
       <div>
-      <Link to={blogRoute}>{blog.title}</Link>
-      {blog.author}
+        <Link to={blogRoute}>{blog.title}</Link>
+        {blog.author}
       </div>
       <div>{blog.url}</div>
       <div data-testid="likes">
