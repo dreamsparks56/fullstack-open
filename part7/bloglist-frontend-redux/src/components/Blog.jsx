@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { likeBlog, removeBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { Link as ChakraLink, HStack, Text } from '@chakra-ui/react'
+import { Button } from '@chakra-ui/react'
 
 const Blog = ({ blog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -10,26 +12,24 @@ const Blog = ({ blog, verifyId }) => {
 
   const blogRoute = `/blogs/${blog.id}`
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
-
   const blogMain = () => (
-    <div>
-      <Link to={blogRoute}>{blog.title}</Link>
+    <HStack>
+      <ChakraLink asChild>
+      <Link to={blogRoute}>
+      <Text fontSize={'md'} fontWeight={'medium'}>
+        {blog.title}
+        </Text>
+        </Link>
+      </ChakraLink>      
       {blog.author} {toggler('expand')}
-    </div>
+    </HStack>
   )
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded)
   }
 
-  const toggler = (label) => <button onClick={toggleExpanded}>{label}</button>
+  const toggler = (label) => <Button variant={'surface'} onClick={toggleExpanded}>{label}</Button>
 
   const handleLike = (event) => {
     event.preventDefault()
@@ -41,7 +41,7 @@ const Blog = ({ blog, verifyId }) => {
   }
 
 
-  const deleteButton = () => <button onClick={handleDelete}>remove</button>
+  const deleteButton = () => <Button variant={'outline'} onClick={handleDelete}>remove</Button>
 
   const handleDelete = (event) => {
     event.preventDefault()
@@ -53,23 +53,31 @@ const Blog = ({ blog, verifyId }) => {
 
   const blogExpanded = () => (
     <div>
-      <div>
-        <Link to={blogRoute}>{blog.title}</Link>
+      <HStack>
+        <ChakraLink asChild>
+      <Link to={blogRoute}>
+      <Text fontSize={'md'} fontWeight={'medium'}>
+        {blog.title}
+        </Text>
+        </Link>
+      </ChakraLink> 
         {blog.author}
-      </div>
+      </HStack>
       <div>{blog.url}</div>
-      <div data-testid="likes">
+      <HStack data-testid="likes">
         {blog.likes}
-        <button onClick={handleLike}>like</button>
-      </div>
+        <Button onClick={handleLike}>like</Button>
+      </HStack>
       <div>{blog.user.name}</div>
+      <HStack>
       {verifyId(blog.user.id) && deleteButton()}
       {toggler('collapse')}
+      </HStack>      
     </div>
   )
 
   return (
-    <div style={blogStyle} className="blog">
+    <div className="blog">
       {!isExpanded && blogMain()}
       {isExpanded && blogExpanded()}
     </div>

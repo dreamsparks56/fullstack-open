@@ -1,11 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { commentBlog, likeBlog } from '../reducers/blogReducer'
+import { commentBlog, getBlog, likeBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { Button, Card, Heading, HStack, VStack } from '@chakra-ui/react'
 
 const BlogDetails = ({ blog }) => {
   const dispatch = useDispatch()
   const [comment, setComment] = useState('')
+
+  useEffect(() => {
+  if (blog.comments) {
+    dispatch(getBlog(blog.id))
+  }
+}, [])
 
   const handleLike = (event) => {
     event.preventDefault()
@@ -31,27 +38,33 @@ const BlogDetails = ({ blog }) => {
 
   return (
     <div>
-      <h2>{blog.title} {blog.author}</h2>
-      {blog.url}
-      <br></br>
-      {blog.likes} likes
-      <button onClick={handleLike}>like</button>
-      <br></br>
+          <Card.Root colorPalette={'teal'} align={{ base: "center", lg: "flex-start" }} maxW="sm">
+            <Card.Body>
+              <VStack>
+      <Heading>{blog.title} {blog.author}</Heading>
+      <div>{blog.url}</div>
+      <div>{blog.likes} likes</div>
+      <Button variant="outline" onClick={handleLike}>like</Button>
             Added by {blog.user.name}
-      <h2>Comments</h2>
+            </VStack>
+            </Card.Body>
+            </Card.Root>
+      <Heading size="md">Comments</Heading>
       <ul>
         {blog.comments.map(comment =>
           <li key={comment.id}>{comment.content}</li>
         )}
       </ul>
       <form onSubmit={handleComment}>
+        <HStack>
         <input
           type="text"
           value={comment}
           name="Comment"
           onChange={(event) => setComment(event.target.value)}
         />
-        <button type="submit">add coment</button>
+        <Button type="submit">add coment</Button>
+        </HStack>
       </form>
     </div>
 

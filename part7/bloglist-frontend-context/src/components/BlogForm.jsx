@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import blogService from '../services/blogs'
 import { useNotificationDispatch } from '../NotificationContext'
+import { Button, TextField, Typography } from '@mui/material'
 
 const BlogForm = () => {
   const [newBlogTitle, setNewBlogTitle] = useState('')
@@ -45,11 +46,11 @@ const BlogForm = () => {
 
   return (
     <div className="formContainer">
-      <h2>create new</h2>
+      <Typography variant='h2'>create new</Typography>
       <form onSubmit={addBlog}>
         <div>
-          Title
-          <input
+          <TextField
+            label="Title"
             data-testid="title"
             value={newBlogTitle}
             onChange={(event) => setNewBlogTitle(event.target.value)}
@@ -57,8 +58,8 @@ const BlogForm = () => {
           />
         </div>
         <div>
-          Author
-          <input
+          <TextField
+            label="Author"
             data-testid="author"
             value={newBlogAuthor}
             onChange={(event) => setNewBlogAuthor(event.target.value)}
@@ -66,15 +67,15 @@ const BlogForm = () => {
           />
         </div>
         <div>
-          URL
-          <input
+          <TextField
+            label="URL"
             data-testid="url"
             value={newBlogURL}
             onChange={(event) => setNewBlogURL(event.target.value)}
             placeholder="insert the URL..."
           />
         </div>
-        <button type="submit">save</button>
+        <Button type="submit">save</Button>
       </form>
     </div>
   )

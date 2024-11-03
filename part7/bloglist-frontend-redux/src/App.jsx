@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Route, Routes, useMatch } from 'react-router-dom'
+import { Navigate, Route, Routes, useMatch } from 'react-router-dom'
 import { setUser } from './reducers/userReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import { initializeUsers } from './reducers/usersReducer'
+import { Provider } from './components/ui/provider'
 import blogService from './services/blogs'
 import commentService from './services/comments'
 import NavBar from './components/NavBar'
@@ -11,10 +12,10 @@ import BlogSection from './components/BlogSection'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
 import UserSection from './components/UserSection'
 import User from './components/User'
 import BlogDetails from './components/BlogDetails'
+import { Container } from '@chakra-ui/react'
 
 const App = () => {
   const user = useSelector(state => state.user)
@@ -37,7 +38,6 @@ const App = () => {
   useEffect(() => {
     user && window.localStorage.setItem('loggedUser', JSON.stringify(user))
     user && dispatch(initializeBlogs())
-    user && dispatch(initializeUsers())
   }, [user])
 
   const userMatch = useMatch('/users/:id')
@@ -50,44 +50,30 @@ const App = () => {
     blogs.find(blog => blog.id === blogMatch.params.id)
     : null
 
-  const blogFormRef = useRef()
-
   const verifyId = (id) => {
     return blogService.verifyId(id)
   }
 
   const loginForm = () => (
-    <Togglable buttonLabel="login">
+    <Togglable buttonLabel="Click to login">
       <LoginForm />
     </Togglable>
   )
 
-  const blogForm = () => (
-    <Togglable buttonLabel="create new" ref={blogFormRef}>
-      <BlogForm />
-    </Togglable>
-  )
-
-  const dashboard = () => (
-    <div>
+  return (
+    <Provider>
+      <Container>
+      <Notification />
       <NavBar />
       <Routes>
         <Route path="/users/:id" element={<User user={routeUser} />} />
         <Route path='/users' element={ <UserSection /> }/>
         <Route path="/blogs/:id" element={<BlogDetails blog={routeBlog} verifyId={verifyId} />} />
         <Route path='/' element={ <BlogSection verifyId={verifyId}/> } />
+        <Route path="/login" element={ !user ? loginForm() : <Navigate replace to="/" /> } />
       </Routes>
-      {blogForm()}
-    </div>
-  )
-
-  return (
-    <div>
-      <Notification />
-
-      {!user && loginForm()}
-      {user && dashboard()}
-    </div>
+      </Container>
+    </Provider>
   )
 }
 

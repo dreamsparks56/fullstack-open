@@ -3,19 +3,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNotificationDispatch } from '../NotificationContext'
 import blogService from '../services/blogs'
 import { Link } from 'react-router-dom'
+import { Button } from '@mui/material'
 
 const Blog = ({ blog, verifyId }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const queryClient = useQueryClient()
   const notify = useNotificationDispatch()
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
 
   const blogRoute = `/blogs/${blog.id}`
 
@@ -30,13 +23,13 @@ const Blog = ({ blog, verifyId }) => {
     setIsExpanded(!isExpanded)
   }
 
-  const toggler = (label) => <button onClick={toggleExpanded}>{label}</button>
+  const toggler = (label) => <Button onClick={toggleExpanded}>{label}</Button>
 
   const likeBlogMutation = useMutation({
     mutationFn: (blogObject) => blogService.update(blog.id, blogObject),
     onSuccess: (updatedBlog) => {
       const blogs = queryClient.getQueryData(['blogs'])
-      queryClient.setQueryData(['blogs'], blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog))
+      queryClient.setQueryData(['blogs'], blogs.map(blog => blog.id === updatedBlog.id ? { ...blog, likes: updatedBlog.likes } : blog))
     },
   })
 
@@ -61,7 +54,7 @@ const Blog = ({ blog, verifyId }) => {
   }
 
 
-  const deleteButton = () => <button onClick={handleDelete}>remove</button>
+  const deleteButton = () => <Button onClick={handleDelete}>remove</Button>
 
   const handleDelete = (event) => {
     event.preventDefault()
@@ -87,7 +80,7 @@ const Blog = ({ blog, verifyId }) => {
       <div>{blog.url}</div>
       <div data-testid="likes">
         {blog.likes}
-        <button onClick={handleLike}>like</button>
+        <Button onClick={handleLike}>like</Button>
       </div>
       <div>{blog.user.name}</div>
       {verifyId(blog.user.id) && deleteButton()}
@@ -96,7 +89,7 @@ const Blog = ({ blog, verifyId }) => {
   )
 
   return (
-    <div style={blogStyle} className="blog">
+    <div className="blog">
       {!isExpanded && blogMain()}
       {isExpanded && blogExpanded()}
     </div>

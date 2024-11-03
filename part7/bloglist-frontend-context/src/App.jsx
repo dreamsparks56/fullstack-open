@@ -1,24 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect } from 'react'
 import { useUserDispatch, useUserValue } from './UserContext'
-import { Route, Routes, useMatch } from 'react-router-dom'
+import { Navigate, Route, Routes, useMatch } from 'react-router-dom'
 import NavBar from './components/NavBar'
 import BlogSection from './components/BlogSection'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import userService from './services/users'
 import commentService from './services/comments'
 import UserSection from './components/UserSection'
 import User from './components/User'
 import BlogDetails from './components/BlogDetails'
+import { Container } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
 
 
 const App = () => {
   const userDispatch = useUserDispatch()
-  const [users, setUsers] = useState([])
-  const [blogs, setBlogs] = useState([])
   const user = useUserValue()
 
   useEffect(() => {
@@ -33,21 +32,20 @@ const App = () => {
     }
   }, [])
 
-  useEffect(() => {
-    userService
-      .getAll()
-      .then(acquiredUsers => {
-        setUsers(acquiredUsers)
-      })
-  }, [])
+  const blogsResult = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    refetchOnWindowFocus: false
+  })
 
-  useEffect(() => {
-    blogService
-      .getAll()
-      .then(acquiredBlogs => {
-        setBlogs(acquiredBlogs)
-      })
-  }, [])
+  const usersResult = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getAll,
+    refetchOnWindowFocus: false
+  })
+
+  const blogs = blogsResult.data
+  const users = usersResult.data
 
   const userMatch = useMatch('/users/:id')
   const routeUser = userMatch ?
@@ -59,8 +57,6 @@ const App = () => {
     blogs.find(blog => blog.id === blogMatch.params.id)
     : null
 
-  const blogFormRef = useRef()
-
   const verifyId = (id) => {
     return blogService.verifyId(id)
   }
@@ -71,32 +67,18 @@ const App = () => {
     </Togglable>
   )
 
-  const blogForm = () => (
-    <Togglable buttonLabel="create new" ref={blogFormRef}>
-      <BlogForm />
-    </Togglable>
-  )
-
-  const dashboard = () => (
-    <div>
+  return (
+    <Container>
+      <Notification />
       <NavBar />
       <Routes>
         <Route path="/users/:id" element={<User user={routeUser} />} />
         <Route path="/blogs/:id" element={<BlogDetails blogInfo={routeBlog} verifyId={verifyId} />} />
         <Route path='/users' element={ <UserSection /> }/>
         <Route path='/' element={ <BlogSection verifyId={verifyId}/> } />
+        <Route path="/login" element={ !user ? loginForm() : <Navigate replace to="/" /> } />
       </Routes>
-      {blogForm()}
-    </div>
-  )
-
-  return (
-    <div>
-      <Notification />
-
-      {!user && loginForm()}
-      {user && dashboard()}
-    </div>
+    </Container>
   )
 }
 

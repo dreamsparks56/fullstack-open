@@ -5,6 +5,7 @@ import commentService from '../services/comments'
 import { useMutation } from '@tanstack/react-query'
 import { useUserDispatch } from '../UserContext'
 import { useNotificationDispatch } from '../NotificationContext'
+import { Button, TextField, Typography } from '@mui/material'
 
 const LoginForm = () => {
   const [username, setUsername] = useState('')
@@ -24,7 +25,7 @@ const LoginForm = () => {
     onError: (error) => {
       const msLength = 5000
       notify({ type: 'SET', payload: {
-        message: error,
+        message: 'Wrong credentials',
         success: false
       }
       })
@@ -49,11 +50,11 @@ const LoginForm = () => {
 
   return (
     <div>
-      <h2>log in to application</h2>
+      <Typography variant="h2">log in to application</Typography>
       <form onSubmit={handleSubmit}>
         <div>
-          username
-          <input
+          <TextField
+            label="Username"
             data-testid="username"
             type="text"
             value={username}
@@ -62,8 +63,8 @@ const LoginForm = () => {
           />
         </div>
         <div>
-          password
-          <input
+          <TextField
+            label="Password"
             data-testid="password"
             type="password"
             value={password}
@@ -71,7 +72,9 @@ const LoginForm = () => {
             onChange={(event) => setPassword(event.target.value)}
           />
         </div>
-        <button type="submit">login</button>
+        <div>
+          <Button type="submit">login</Button>
+        </div>
       </form>
     </div>
   )

@@ -3,6 +3,7 @@ import { useNotificationDispatch } from '../NotificationContext'
 import blogService from '../services/blogs'
 import commentService from '../services/comments'
 import { useState } from 'react'
+import { Button, Typography } from '@mui/material'
 
 const BlogDetails = ({ blogInfo }) => {
   const [comment, setComment] = useState('')
@@ -58,14 +59,14 @@ const BlogDetails = ({ blogInfo }) => {
 
   return (
     <div>
-      <h2>{blog.title} {blog.author}</h2>
+      <Typography variant="h2">{blog.title} {blog.author}</Typography>
       {blog.url}
       <br></br>
       {blog.likes} likes
-      <button onClick={handleLike}>like</button>
+      <Button onClick={handleLike}>like</Button>
       <br></br>
             Added by {blog.user.name}
-      <h2>Comments</h2>
+      <Typography variant="h3">Comments</Typography>
       <ul>
         {blog.comments.map(comment =>
           <li key={comment.id}>{comment.content}</li>
@@ -78,7 +79,7 @@ const BlogDetails = ({ blogInfo }) => {
           name="Comment"
           onChange={(event) => setComment(event.target.value)}
         />
-        <button type="submit">add coment</button>
+        <Button type="submit">add coment</Button>
       </form>
     </div>
 

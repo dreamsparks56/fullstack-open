@@ -1,23 +1,18 @@
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { login } from '../reducers/userReducer'
-import { setNotification } from '../reducers/notificationReducer'
+import { Button, Card, Heading, Input, VStack } from '@chakra-ui/react'
 
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const dispatch = useDispatch()
-  const user = useSelector(state => state.user)
 
   const handleLogin = async ({ username, password }) => {
-    try {
       dispatch(login({
         username,
         password,
       }))
-    } catch (exception) {
-      dispatch(setNotification('Wrong credentials', false))
-    }
   }
 
   const handleSubmit = (event) => {
@@ -33,30 +28,34 @@ const LoginForm = () => {
 
   return (
     <div>
-      <h2>log in to application</h2>
+    <Card.Root variant="subtle" maxW="sm">
+      <Card.Body>
+    <VStack>
+      <Heading>log in to application</Heading>
       <form onSubmit={handleSubmit}>
-        <div>
-          username
-          <input
+        <VStack>
+          <Input
             data-testid="username"
             type="text"
             value={username}
             name="Username"
+            placeholder='Username'
             onChange={(event) => setUsername(event.target.value)}
           />
-        </div>
-        <div>
-          password
-          <input
+          <Input
             data-testid="password"
             type="password"
             value={password}
             name="Password"
+            placeholder='Password'
             onChange={(event) => setPassword(event.target.value)}
           />
-        </div>
-        <button type="submit">login</button>
+        <Button type="submit">login</Button>
+        </VStack>
       </form>
+    </VStack>
+    </Card.Body>
+    </Card.Root>
     </div>
   )
 }
